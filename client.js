@@ -1,7 +1,7 @@
 'use strict';
-var mqtt = require('mqtt');
+let mqtt = require('mqtt');
 
-var client = mqtt.createClient(1883, 'localhost', {
+let client = mqtt.createClient(1883, 'localhost', {
   protocolId: 'MQIsdp',
   protocolVersion: 3,
   clientId: 'client1',

@@ -1,8 +1,10 @@
 'use strict';
-var mqtt = require('mqtt');
+let mqtt = require('mqtt');
+
+let port = 1883;
 	
 mqtt.createServer(function(client) {
-	var self = this;
+	let self = this;
 
 	if (!self.clients) self.clients = {};
 
@@ -15,10 +17,10 @@ mqtt.createServer(function(client) {
 	});
 
 	client.on('subscribe', function(packet) {
-		var granted = [];
+		let granted = [];
 		console.log('SUBSCRIBE(%s): %j', client.id, packet);
-		for (var i = 0; i < packet.subscriptions.length; i++) {
-			var qos = packet.subscriptions[i].qos,
+		for (let i = 0; i < packet.subscriptions.length; i++) {
+			let qos = packet.subscriptions[i].qos,
 				topic = packet.subscriptions[i].topic,
 				reg = new RegExp(topic.replace('+', '[^\/]+').replace('#', '.+') + '$');
 			granted.push(qos);
@@ -30,11 +32,11 @@ mqtt.createServer(function(client) {
 	client.on('publish', function(packet) {
 		console.log('PUBLISH(%s): %j', client.id, packet);
 		// loop all clients
-		for (var k in self.clients) {
-			var c = self.clients[k];
+		for (let k in self.clients) {
+			let c = self.clients[k];
 			// loop all subscription of c client
-			for (var i = 0; i < c.subscriptions.length; i++) {
-				var s = c.subscriptions[i];
+			for (let i = 0; i < c.subscriptions.length; i++) {
+				let s = c.subscriptions[i];
 				// if c client is registered on the topic republish the message
 				if (s.test(packet.topic)) {
 					c.publish({topic: packet.topic, payload: packet.payload});
@@ -64,4 +66,6 @@ mqtt.createServer(function(client) {
 		}
 		console.log(err);
 	});
-}).listen(1883);
+}).listen(port, function() {
+	console.log('mqtt server is listening on port', port);
+});
