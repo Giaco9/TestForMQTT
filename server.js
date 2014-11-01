@@ -1,12 +1,11 @@
 'use strict';
-let mqtt = require('mqtt');
+var mqtt = require('mqtt');
 	
 mqtt.createServer(function(client) {
-	let self = this;
+	var self = this;
 
 	if (!self.clients) self.clients = {};
 
-	// il client si connette
 	client.on('connect', function(packet) {
 		self.clients[packet.clientId] = client;
 		client.id = packet.clientId;
@@ -15,12 +14,11 @@ mqtt.createServer(function(client) {
 		console.log('CONNECT: client id: ' + client.id);
 	});
 
-	// il client si iscrve a uno o più topic
 	client.on('subscribe', function(packet) {
-		let granted = [];
+		var granted = [];
 		console.log('SUBSCRIBE(%s): %j', client.id, packet);
-		for (let i = 0; i < packet.subscriptions.length; i++) {
-			let qos = packet.subscriptions[i].qos,
+		for (var i = 0; i < packet.subscriptions.length; i++) {
+			var qos = packet.subscriptions[i].qos,
 				topic = packet.subscriptions[i].topic,
 				reg = new RegExp(topic.replace('+', '[^\/]+').replace('#', '.+') + '$');
 			granted.push(qos);
@@ -29,16 +27,15 @@ mqtt.createServer(function(client) {
 		client.suback({messageId: packet.messageId, granted: granted});
 	});
 
-	// il client manda un messaggio in  un topic
 	client.on('publish', function(packet) {
 		console.log('PUBLISH(%s): %j', client.id, packet);
-		// controllo tutti i client connessi
-		for (let k in self.clients) {
-			let c = self.clients[k];
-			// controllo le iscrizioni di ogni client
-			for (let i = 0; i < c.subscriptions.length; i++) {
-				let s = c.subscriptions[i];
-				// se il client è iscritto al topic allora rinvio il messaggio
+		// loop all clients
+		for (var k in self.clients) {
+			var c = self.clients[k];
+			// loop all subscription of c client
+			for (var i = 0; i < c.subscriptions.length; i++) {
+				var s = c.subscriptions[i];
+				// if c client is registered on the topic republish the message
 				if (s.test(packet.topic)) {
 					c.publish({topic: packet.topic, payload: packet.payload});
 					i = c.subscriptions.length;
@@ -57,6 +54,7 @@ mqtt.createServer(function(client) {
 	});
 
 	client.on('close', function() {
+		console.log('client %s close', client.id);
 		delete self.clients[client.id];
 	});
 
