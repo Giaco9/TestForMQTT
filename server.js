@@ -52,6 +52,7 @@ mqtt.createServer(function(client) {
 	});
 
 	client.on('disconnect', function() {
+		console.log('client %s disconnect', client.id);
 		client.stream.end();
 	});
 
@@ -69,3 +70,4 @@ mqtt.createServer(function(client) {
 }).listen(port, function() {
 	console.log('mqtt server is listening on port', port);
 });
+module.exports = mqtt;

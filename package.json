@@ -1,11 +1,16 @@
 {
   "name": "mqttTest",
   "version": "0.0.1",
-  "description": "Test for try Mosca",
+  "description": "Test for try MQTT",
   "main": "index.js",
-  "author": "Giacomo Consonni",
+  "author": "<Giacomo Consonni> giacomo.consonni@gmail.com",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Giaco9/TestForMQTT.git"
+  },
   "license": "MIT",
   "dependencies": {
+    "mosca": "^0.25.1",
     "mqtt": "^0.3.12"
   }
 }
